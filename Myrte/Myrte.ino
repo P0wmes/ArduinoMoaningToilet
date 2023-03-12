@@ -1,24 +1,3 @@
-/***************************************************
-  DFPlayer - A Mini MP3 Player For Arduino
-  <https://www.dfrobot.com/product-1121.html>
-
- ***************************************************
-  This example shows the basic function of library for DFPlayer.
-
-  Created 2016-12-07
-  By [Angelo qiao](Angelo.qiao@dfrobot.com)
-
-  GNU Lesser General Public License.
-  See <http://www.gnu.org/licenses/> for details.
-  All above must be included in any redistribution
- ****************************************************/
-
-/***********Notice and Trouble shooting***************
-  1.Connection and Diagram can be found here
-  <https://www.dfrobot.com/wiki/index.php/DFPlayer_Mini_SKU:DFR0299#Connection_Diagram>
-  2.This code is tested on Arduino Uno, Leonardo, Mega boards.
- ****************************************************/
-
 #include "Arduino.h"
 #include "SoftwareSerial.h"
 #include "DFRobotDFPlayerMini.h"
@@ -38,31 +17,31 @@ int pos = 0;
 
 void setup()
 {
-
+  mySoftwareSerial.begin(9600);
   Serial.begin(115200);
 
   pinMode(TRIG_PIN, OUTPUT); // Trigger-Pin ist ein Ausgang
   pinMode(ECHO_PIN, INPUT); // Echo-Pin ist ein Eingang
 
   myservo.attach(SERVO_PIN);
-  /*
 
-    Serial.println();
-    Serial.println(F("DFRobot DFPlayer Mini Demo"));
-    Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
 
-    if (!myDFPlayer.begin(mySoftwareSerial)) {  //Use softwareSerial to communicate with mp3.
-      Serial.println(F("Unable to begin:"));
-      Serial.println(F("1.Please recheck the connection!"));
-      Serial.println(F("2.Please insert the SD card!"));
-      while (true) {
-        delay(0); // Code to compatible with ESP8266 watch dog.
-      }
+  Serial.println();
+  Serial.println(F("DFRobot DFPlayer Mini Demo"));
+  Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
+
+  if (!myDFPlayer.begin(mySoftwareSerial)) {  //Use softwareSerial to communicate with mp3.
+    Serial.println(F("Unable to begin:"));
+    Serial.println(F("1.Please recheck the connection!"));
+    Serial.println(F("2.Please insert the SD card!"));
+    while (true) {
+      delay(0); // Code to compatible with ESP8266 watch dog.
     }
-    Serial.println(F("DFPlayer Mini online."));
+  }
+  Serial.println(F("DFPlayer Mini online."));
 
-    myDFPlayer.volume(20);  //Set volume value. From 0 to 30
-  */
+  myDFPlayer.volume(20);  //Set volume value. From 0 to 30
+
 }
 
 void loop()
@@ -70,34 +49,34 @@ void loop()
   static unsigned long timer = millis();
   long entfernung = getDistance();
 
-  if (entfernung > 5 && entfernung  <= 200)
+  if (entfernung > 5 && entfernung  <= 50)
   {
     openCover();
-    delay(500); //10sec
-    /*
+    delay(2000); //10sec
 
     if (myDFPlayer.available()) {
       printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
     }
 
+    Serial.println("Play sound");
     if (millis() - timer > 10000) {
       timer = millis();
       myDFPlayer.next();  //Play next mp3 every 10 second.
     }
-
+    
     if (myDFPlayer.available()) {
       printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
-    }*/
-    Serial.println("Play sound");
-    delay(1000); //10sec
+    }
     
+    delay(15000); //10sec
+
     closeCover();
-    delay(1000); //10sec
+    delay(2000); //10sec
 
   }
   
 
-  delay(5000); //10sec
+  delay(10000); //10sec
 }
 
 
@@ -132,7 +111,7 @@ int getDistance() {
 void openCover() {
   Serial.println("OpenCover");
   myservo.write(90);
- }
+}
 
 void closeCover() {
   Serial.println("CloseCover");
