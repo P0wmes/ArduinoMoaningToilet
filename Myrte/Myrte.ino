@@ -3,8 +3,8 @@
 #include "DFRobotDFPlayerMini.h"
 #include <Servo.h>
 
-#define TRIG_PIN 7
-#define ECHO_PIN 6
+#define TRIG_PIN 7 //lila
+#define ECHO_PIN 6 //grau
 #define SERVO_PIN 8
 
 Servo myservo;
@@ -14,6 +14,8 @@ DFRobotDFPlayerMini myDFPlayer;
 void printDetail(uint8_t type, int value);
 
 int pos = 0;
+int openedAngle = 90;
+int closedAngle = 3;
 
 void setup()
 {
@@ -35,48 +37,46 @@ void setup()
     Serial.println(F("1.Please recheck the connection!"));
     Serial.println(F("2.Please insert the SD card!"));
     while (true) {
-      delay(0); // Code to compatible with ESP8266 watch dog.
+      delay(10); // Code to compatible with ESP8266 watch dog.
     }
   }
   Serial.println(F("DFPlayer Mini online."));
 
-  myDFPlayer.volume(20);  //Set volume value. From 0 to 30
+  myDFPlayer.volume(23);  //Set volume value. From 0 to 30
 
+  closeCover();
 }
 
 void loop()
 {
-  static unsigned long timer = millis();
+
   long entfernung = getDistance();
 
-  if (entfernung > 5 && entfernung  <= 50)
+  if (entfernung > 10 && entfernung  <= 100)
   {
+    delay(15000);
     openCover();
-    delay(2000); //10sec
+    delay(1000);
 
     if (myDFPlayer.available()) {
       printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
     }
 
     Serial.println("Play sound");
-    if (millis() - timer > 10000) {
-      timer = millis();
-      myDFPlayer.next();  //Play next mp3 every 10 second.
-    }
-    
+
+    myDFPlayer.next();  //Play next mp3
+
     if (myDFPlayer.available()) {
       printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
     }
-    
-    delay(15000); //10sec
+
+    delay(25000);
 
     closeCover();
-    delay(2000); //10sec
-
+    delay(180000);
+    
   }
-  
-
-  delay(10000); //10sec
+  delay(1500);
 }
 
 
@@ -110,12 +110,22 @@ int getDistance() {
 
 void openCover() {
   Serial.println("OpenCover");
-  myservo.write(90);
+
+  for (int i = closedAngle; i < openedAngle; i++)
+  {
+    delay(5);
+    myservo.write(i);
+  }
 }
 
 void closeCover() {
   Serial.println("CloseCover");
-  myservo.write(0);
+
+  for (int i = openedAngle; i >= closedAngle; i--)
+  {
+    delay(5);
+    myservo.write(i);
+  }
 }
 
 
